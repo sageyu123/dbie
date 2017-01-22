@@ -10,6 +10,11 @@ dbie_bin2sav.pro: main code to convert the output results from the NLFFF extrapo
 Detailed explanation can be found in the comments of the main codes.
 
 ## Usage
+cd to dbie diretory, execute the setenv_dbie.sh to setup the environment.
+````
+./setenv_dbie.sh
+````
+
 Create the input file of boundary data. Run ``dbie_make_boundary.pro`` in IDL.
 ````
 IDL> dbie_make_boundary,bx,by,bz,date,time

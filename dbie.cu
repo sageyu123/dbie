@@ -439,9 +439,9 @@ int Bsuffix_y()
  	float z;
  	int i;
 	float btx,bty,btz;
-	float bb0x,bb1x,bb2x,bb3x,bb4x,bb5x;
-	float bb0y,bb1y,bb2y,bb3y,bb4y,bb5y;
-	float bb0z,bb1z,bb2z,bb3z,bb4z,bb5z;
+	float bb0x,bb1x,bb2x,bb3x,bb4x;//,bb5x;
+	float bb0y,bb1y,bb2y,bb3y,bb4y;//,bb5y;
+	float bb0z,bb1z,bb2z,bb3z,bb4z;//,bb5z;
 	float bm0x, bm0y, bm0z;
 	float bm1x, bm1y, bm1z;
 	float bm2x, bm2y, bm2z;
