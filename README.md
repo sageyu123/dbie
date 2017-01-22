@@ -32,8 +32,7 @@ IDL> dbie_make_boundary
 ````
 ## Authors
 ### Original Author
-- Sijie Yu (sijie.yu@njit.edu)
+- Sijie Yu ([@sjyu1988](https://github.com/sjyu1988))
 
 ### Co-Author
 - Yihua Yan(yyh@nao.cas.cn)
-# dbie
