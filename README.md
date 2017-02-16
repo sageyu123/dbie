@@ -33,7 +33,7 @@ you can run the extrapolation to a height of Ndz layers with follow command.
 When the extrapolation completed, a binary containing the result from extrapolation will be saved in **results** folder.
 The output 3-Dimension magnetic field data can be retrieved to a IDL sav file with ``dbie_bin2sav.pro``
 ````
-IDL> dbie_make_boundary
+IDL> dbie_bin2sav
 ````
 ## Authors
 ### Original Author
