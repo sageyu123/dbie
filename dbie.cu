@@ -16,6 +16,8 @@ float bo0=1.0,alpha;
 float bxo[10],byo[10],bzo[10];
 float *b3x, *b3y, *b3z;
 float zratio=8.0;
+float Bratio = 6.04965/zratio/zratio;
+// float Bratio2 = Bratio*Bratio/9/zratio;
 // float *j3x, *j3y, *j3z;
 
 float bxo_lam0[N],byo_lam0[N],bzo_lam0[N],bxo_spl_y2_0[N],byo_spl_y2_0[N],bzo_spl_y2_0[N];
@@ -26,7 +28,7 @@ float p[3];
 float per[3];
 int icovg;
 int *gival;
-float rsize=(6.0);
+float rsize=(600.0);
 float *gbxyz;
 float *gpux, *gpuy, *gpuptn_lam;
 float *resultbxyz;
@@ -45,7 +47,7 @@ float dx, dy, dz, dxdy,zo_dxdy;
 #define ndx 600  //-----------For square mesh nd*nd with Rsize the same for x- and y-axis. Otherwise should be Nx*Ny. by YYH 1-Aug 2013-------
 #define ndy 600
 #define ndz 100
-#define datasize_xy 360000	//256x256
+#define datasize_xy 360000	//ndx * ndy
 #define pi4 12.566370614359172
 #define pi2 6.283185307179586
 
@@ -170,7 +172,7 @@ void nlffbiept2()
 		pery1+=sumxyz[i+BLOCK_NUM]/100.0;
 		perz1+=sumxyz[i+2*BLOCK_NUM]/100.0;
 	}
-	
+
 
 	kernel3<<<BLOCK_NUM, THREAD_NUM, 3*THREAD_NUM*sizeof(float)>>>(gbxyz, gpux, gpuy, gpuptn_lam, resultbxyz, gival);
 	cudaMemcpy(sumxyz, resultbxyz, sizeof(float)*BLOCK_NUM*3, cudaMemcpyDeviceToHost);
@@ -218,6 +220,9 @@ void nlffbiept2()
 			shared[0][tid]=shared[0][tid]+(lrx*__sinf(lrx)+__cosf(lrx))*wt_rrr*bxyz[gival_i];
 			shared[1][tid]=shared[1][tid]+(lry*__sinf(lry)+__cosf(lry))*wt_rrr*bxyz[gival_i+datasize_xy];
 			shared[2][tid]=shared[2][tid]+(lrz*__sinf(lrz)+__cosf(lrz))*wt_rrr*bxyz[gival_i+2*datasize_xy];
+			// shared[0][tid]=shared[0][tid]+(lrx*__sinf(lrx)+__cosf(lrx))*wt_rrr;
+			// shared[1][tid]=shared[1][tid]+(lry*__sinf(lry)+__cosf(lry))*wt_rrr;
+			// shared[2][tid]=shared[2][tid]+(lrz*__sinf(lrz)+__cosf(lrz))*wt_rrr;
 		}
 	__syncthreads();
 
@@ -266,8 +271,9 @@ void nlffbiept(float lamx0,float lamy0,float lamz0)
 		by0+=sumxyz[i+BLOCK_NUM];
 		bz0+=sumxyz[i+2*BLOCK_NUM];
 	}
-		zo_dxdy = ro[2]*dxdy/pi2;
-
+		// zo_dxdy = ro[2]*dxdy/pi2;
+		zo_dxdy = ro[2]*dxdy/pi2*Bratio;
+		// printf("zo_dxdy:%f -- B:%f,%f,%f\n",zo_dxdy,bx0,by0,bz0);
 		bxo[0]=bx0*zo_dxdy;
 		byo[0]=by0*zo_dxdy;
 		bzo[0]=bz0*zo_dxdy;
@@ -503,7 +509,7 @@ int Bsuffix_y()
 		bm4x=(btx+bb4x)/2.0;
 		bm4y=(bty+bb4y)/2.0;
 		bm4z=(btz+bb4z)/2.0;
-	
+
 		// bm0x=(bb0x+btx+bm1x+bm2x+bm3x+bm4x)/6.0;
 		// bm0y=(bb0y+bty+bm1y+bm2y+bm3y+bm4y)/6.0;
 		// bm0z=(bb0z+btz+bm1z+bm2z+bm3z+bm4z)/6.0;
@@ -521,7 +527,7 @@ int Bsuffix_y()
 		// rotz = (bm4y-bm3y-bm2x+bm1x)/dx;
 		rotz= (bm1x+bm4y-bm2x-bm3y)*dx/dSz;
 		dvb0 = fabs(((bm4x-bm3x) + (bm2y-bm1y))/dx + (btz-bb0z)/dz);
-			
+	   	// printf("delta:%f,%f,%f  -- B:%f,%f,%f\n",dx,dy,dz,bxo[0],byo[0],bzo[0]);
 		// }
 		// else
 		// {
@@ -552,15 +558,15 @@ int Bsuffix_y()
 		//     bb5x=b3x[i-datasize_xy];
 		//     bb5y=b3y[i-datasize_xy];
 		//     bb5z=b3z[i-datasize_xy];
-			
+
 		// 	bm0x=bb0x;
 		// 	bm0y=bb0y;
 		// 	bm0z=bb0z;
-			
+
 		// 	rotx = (bb2z-bb1z-bty+bb5y)/2.0/dx;
 		// 	roty = (btx-bb5x-bb4z+bb3z)/2.0/dx;
 		// 	rotz = (bb4y-bb3y-bb2x+bb1x)/2.0/dx;
-		// 	dvb0 = fabs(((bb4x-bb3x) + (bb2y-bb1y) + (btz-bb5z))/2.0/dx);	
+		// 	dvb0 = fabs(((bb4x-bb3x) + (bb2y-bb1y) + (btz-bb5z))/2.0/dx);
 		// }
 		jo[0] = rotx;
 		jo[1] = roty;
@@ -792,23 +798,23 @@ int Bsuffix_y()
 		// printf("ff = %f,%f,%f,%f,%f,%f,%f\n",ff[0],ff[1],ff[2],ff[3],ff[4],ff[5],ff[6]);
  		icovg=-1;
  		fx=ffk2;
-		
+
  		if((abs(p0[0]-p[0])<0.0000001) && abs(p0[1]-p[1])<0.0000001 && abs(p0[2]-p[2])<0.0000001)
 	 		{
 				dead++;
 				// printf("dead:%d\n",dead);
 	 		}
-			
+
 		p0[0] = p[0];
 		p0[1] = p[1];
 		p0[2] = p[2];
-		
-		
+
+
 		if(dead > 5)
 		{
 			goto loop88;
-		}		
-		
+		}
+
  		if(difer>ft)
  		{
  			goto iteration; //modified with "fx<ft" instead of "difer<ft" on 19 Mar 2014
@@ -878,6 +884,7 @@ int Bsuffix_y()
     	bxo_lam0[i] = bxo[0];
     	byo_lam0[i] = byo[0];
     	bzo_lam0[i] = bzo[0];
+		// printf("lam=%f,%f,%f, bxyz=%f,%f,%f\n",p[0],p[1],p[2],bxo[0],byo[0],bzo[0]);
     }
     yp1 = 1.0e30;
     ypn = 1.0e30;
