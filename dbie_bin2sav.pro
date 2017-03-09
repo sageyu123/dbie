@@ -45,17 +45,17 @@ FOR nn  = 0, n_elements(filename)-1 DO BEGIN
   	height_start = long(STRMID(filename[ind_h[j]], 14, 3, /REVERSE_OFFSET))
   	height_end   = long(STRMID(filename[ind_h[j]], 10, 3, /REVERSE_OFFSET)) 
   	nz           = height_end-height_start+1
-  	ind          = indgen(nz)*3
-  	dummyfeld    = fltarr(long(ndx)*long(ndy)*nz*3)		
+  	; ind          = indgen(nz)*3
+  	dummyfeld    = fltarr(long(ndx)*long(ndy)*nz*3)
   	Openr,1,filename[ind_h[j]]
   	readu,1, dummyfeld
-  	close,1	
-
-  	dummyfeld = reform(dummyfeld,ndx,ndy,nz*3)
-  	bx0[*,*,height_start:height_end] = dummyfeld[*,*,ind]
-  	by0[*,*,height_start:height_end] = dummyfeld[*,*,ind+1]
-  	bz0[*,*,height_start:height_end] = dummyfeld[*,*,ind+2]			
-			
+  	close,1
+    FOR ii = 0,nz-1 DO BEGIN
+    	dummyfeld = reform(dummyfeld,ndx,ndy,3)
+    	bx0[*,*,height_start+ii] = dummyfeld[*,*,0]
+    	by0[*,*,height_start+ii] = dummyfeld[*,*,1]
+    	bz0[*,*,height_start+ii] = dummyfeld[*,*,2]
+		ENDFOR
 	ENDFOR
 	print,filename[nn] + ' is readed'
 
@@ -69,6 +69,6 @@ FOR nn  = 0, n_elements(filename)-1 DO BEGIN
   save,filename=savfile,bx,by,bz,/VERBOSE
   print,'3D magnetic field saved to '+savfile
 ; stop
-endfor
+ENDFOR
 
-end
+END
