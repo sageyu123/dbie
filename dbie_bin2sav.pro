@@ -50,11 +50,11 @@ FOR nn  = 0, n_elements(filename)-1 DO BEGIN
   	Openr,1,filename[ind_h[j]]
   	readu,1, dummyfeld
   	close,1
+    dummyfeld = reform(dummyfeld,ndx,ndy,3,nz)
     FOR ii = 0,nz-1 DO BEGIN
-    	dummyfeld = reform(dummyfeld,ndx,ndy,3)
-    	bx0[*,*,height_start+ii] = dummyfeld[*,*,0]
-    	by0[*,*,height_start+ii] = dummyfeld[*,*,1]
-    	bz0[*,*,height_start+ii] = dummyfeld[*,*,2]
+    	bx0[*,*,height_start+ii] = dummyfeld[*,*,0,ii]
+    	by0[*,*,height_start+ii] = dummyfeld[*,*,1,ii]
+    	bz0[*,*,height_start+ii] = dummyfeld[*,*,2,ii]
 		ENDFOR
 	ENDFOR
 	print,filename[nn] + ' is readed'
@@ -70,5 +70,4 @@ FOR nn  = 0, n_elements(filename)-1 DO BEGIN
   print,'3D magnetic field saved to '+savfile
 ; stop
 ENDFOR
-
 END
