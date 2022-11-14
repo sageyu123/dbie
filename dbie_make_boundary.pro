@@ -53,5 +53,5 @@ close,1
 ; print,filename1+' saved  '
 ; print,bx[10,20,0]
 
-endfor
+
 END
